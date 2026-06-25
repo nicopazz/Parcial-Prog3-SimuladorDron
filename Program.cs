@@ -8,9 +8,7 @@ namespace SimuladorTrayectoriaDron
     {
         static void Main(string[] args)
         {
-            // ---------------------------------------------------------
-            // PARTE C: Cargar la configuración
-            // ---------------------------------------------------------
+            // Configuración inicial de la aplicación
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
@@ -27,11 +25,9 @@ namespace SimuladorTrayectoriaDron
             Console.WriteLine("================================================");
             Console.WriteLine(" SIMULADOR DE TRAYECTORIA DE DRON AUTOMATIZADO ");
             Console.WriteLine("================================================");
-            Console.WriteLine("\n[OK] Configuración cargada.\n");
+            Console.WriteLine("\n[OK] Configuración cargada correctamente.\n");
 
-            // ---------------------------------------------------------
-            // PARTE E.2: Solicitar y validar datos
-            // ---------------------------------------------------------
+            // Ingreso y validación de la dimensión del terreno
             int N = -1;
             while (N < 1)
             {
@@ -39,6 +35,7 @@ namespace SimuladorTrayectoriaDron
                 if (N < 1) Console.WriteLine("  -> Error: El tamaño del terreno debe ser al menos 1.\n");
             }
 
+            // Ingreso y validación de la coordenada inicial X
             int startX = -1;
             while (startX < 0 || startX >= N)
             {
@@ -46,6 +43,7 @@ namespace SimuladorTrayectoriaDron
                 if (startX < 0 || startX >= N) Console.WriteLine($"  -> Error: La coordenada X debe estar entre 0 y {N - 1}.\n");
             }
 
+            // Ingreso y validación de la coordenada inicial Y
             int startY = -1;
             while (startY < 0 || startY >= N)
             {
@@ -55,9 +53,7 @@ namespace SimuladorTrayectoriaDron
 
             Console.WriteLine($"\n[INFO] Iniciando simulación en terreno de {N}x{N} desde la posición ({startX}, {startY})...");
 
-            // ---------------------------------------------------------
-            // EJECUCIÓN DE LA SIMULACIÓN
-            // ---------------------------------------------------------
+            // Ejecución del algoritmo de simulación
             DronNavigator dron = new DronNavigator(N);
             bool exito = dron.IniciarSimulacion(startX, startY);
 
@@ -65,7 +61,7 @@ namespace SimuladorTrayectoriaDron
             Console.WriteLine(" MATRIZ DE RECORRIDO DEL DRON");
             Console.WriteLine("------------------------------------------------\n");
 
-            // Dibujar matriz usando while
+            // Impresión de la matriz resultante en consola
             int fila = 0;
             while (fila < N)
             {
@@ -84,7 +80,7 @@ namespace SimuladorTrayectoriaDron
             {
                 Console.WriteLine($"[ÉXITO] Simulación terminada. Se cubrieron {dron.TotalAlcanzables} parcelas.");
                 
-                // Extraer la secuencia en orden usando while
+                // Extracción de la secuencia de pasos en orden para su guardado
                 var secuencia = new (int x, int y)[dron.TotalAlcanzables];
                 int f = 0;
                 while (f < N)
@@ -102,9 +98,7 @@ namespace SimuladorTrayectoriaDron
                     f++;
                 }
 
-                // ---------------------------------------------------------
-                // LLAMADA A LA CAPA DE DATOS
-                // ---------------------------------------------------------
+                // Persistencia de los datos en la base de datos
                 DatabaseRepository repo = new DatabaseRepository(connectionString);
                 repo.GuardarRecorrido(N, startX, startY, secuencia);
             }
@@ -114,9 +108,12 @@ namespace SimuladorTrayectoriaDron
             }
         }
 
-        // ---------------------------------------------------------
-        // MÉTODO AUXILIAR (Anti-Crasheo)
-        // ---------------------------------------------------------
+        /// <summary>
+        /// Solicita un número entero al usuario y maneja posibles errores de formato,
+        /// evitando el cierre inesperado de la aplicación.
+        /// </summary>
+        /// <param name="mensaje">El mensaje a mostrar en la consola.</param>
+        /// <returns>El número entero ingresado validado.</returns>
         static int LeerEnteroSeguro(string mensaje)
         {
             int resultado;
