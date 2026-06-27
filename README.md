@@ -74,7 +74,7 @@ parcial_dron
 ## 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/TU_USUARIO/Parcial-Prog3-SimuladorDron.git
+git clone https://github.com/nicopazz/Parcial-Prog3-SimuladorDron.git
 
 cd Parcial-Prog3-SimuladorDron
 ```
